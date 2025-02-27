@@ -75,7 +75,7 @@ jobs:
                   User=root
                   Group=root
                   WorkingDirectory=/app
-                  ExecStart=/app/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 app.wsgi:application
+                  ExecStart=/app/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 --forwarded-allow-ips="*" app.wsgi:application
 
                   Restart=always
                   RestartSec=3
@@ -146,7 +146,7 @@ jobs:
                   User=root
                   Group=root
                   WorkingDirectory=/app
-                  ExecStart=/app/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 app.wsgi:application
+                  ExecStart=/app/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 --forwarded-allow-ips="*" app.wsgi:application
 
                   Restart=always
                   RestartSec=3
