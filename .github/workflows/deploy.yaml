@@ -18,3 +18,9 @@ jobs:
             server-ip: '64.225.107.141'
         secrets:
             SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    server3:
+        uses: ./.github/workflows/deploy-single.yaml
+        with:
+            server-ip: '164.90.183.180'
+        secrets:
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
