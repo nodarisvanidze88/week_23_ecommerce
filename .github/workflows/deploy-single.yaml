@@ -25,7 +25,7 @@ jobs:
 
             - name: Deploy
               run: |
-                  ssh -o StrictHostKeyChecking=no root@${{ inputs.server_ip }} <<EOF
+                  ssh -o StrictHostKeyChecking=no root@${{ inputs.server-ip }} <<EOF
                   set -e
 
                   # Ensure /app exists
