@@ -87,10 +87,13 @@ jobs:
                   EOF
             - name: Create and Transfer `.env` File
               run: |
-                  # Save GitHub Secret to a temporary file
-                  echo -e ${{ secrets.ENV_FILE }} > env_temp_file
+                  # Save GitHub Secret to a temporary file (Fix multi-line issue)
+                  echo "${{ secrets.ENV_FILE }}" > env_temp_file
 
                   # Ensure newlines are correctly preserved
+                  printf "%s\n" "${{ secrets.ENV_FILE }}" > env_temp_file
+
+                  # Remove Windows-style carriage returns (CRLF)
                   sed -i 's/\r$//' env_temp_file
 
                   # Secure file and transfer to server
@@ -98,6 +101,7 @@ jobs:
 
                   # Remove the local file after transfer
                   rm env_temp_file
+
             - name: Deploy Application
               run: |
                   ssh -o StrictHostKeyChecking=no root@${{ inputs.server-ip }} <<EOF
