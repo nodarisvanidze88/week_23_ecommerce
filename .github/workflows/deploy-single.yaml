@@ -97,6 +97,7 @@ jobs:
                   set -e
                   cd /app
                   chmod 600 /app/.env
+                  source venv/bin/activate
                   python manage.py makemigrations
                   python manage.py migrate
                   python manage.py create_superuser  
