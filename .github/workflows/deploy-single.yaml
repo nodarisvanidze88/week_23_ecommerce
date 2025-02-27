@@ -66,9 +66,9 @@ jobs:
                   # Upgrade pip and install dependencies
                   pip install --upgrade pip
                   pip install -r requirements.txt
-                  cat <<EOF > .env
+                  cat <<EOF_ENV > .env
                   ${{ secrets.ENV_FILE }}
-                  EOF
+                  EOF_ENV
                   chmod 600 .env
                   python manage.py makemigrations
                   python manage.py migrate
