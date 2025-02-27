@@ -36,7 +36,7 @@ jobs:
 
                   # Start SSH Agent manually and verify it's running
                   eval "\$(ssh-agent -s)" || echo "Failed to start ssh-agent"
-                  ssh-add ~/.ssh/id_ed25519  # Or ~/.ssh/id_rsa if using RSA
+                  ssh-add ~/.ssh/id_rsa # Or ~/.ssh/id_rsa if using RSA
 
                   # Debug: List added identities to check SSH key is loaded
                   ssh-add -l || echo "No SSH identities found"
