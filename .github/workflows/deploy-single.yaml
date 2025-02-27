@@ -66,10 +66,10 @@ jobs:
                   # Upgrade pip and install dependencies
                   pip install --upgrade pip
                   pip install -r requirements.txt
-                  cat <<EOF > /app/.env
+                  cat <<EOF > .env
                   ${{ secrets.ENV_FILE }}
                   EOF
-                  chmod 600 /app/.env
+                  chmod 600 .env
                   python manage.py makemigrations
                   python manage.py migrate
                   python manage.py create_superuser  
