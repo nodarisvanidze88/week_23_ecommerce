@@ -34,9 +34,12 @@ jobs:
                   sudo apt update
                   sudo apt install -y python3-venv python3-pip gunicorn
 
-                  # Ensure SSH key is available
-                  eval "$(ssh-agent -s)"
+                  # Start SSH Agent manually and verify it's running
+                  eval "\$(ssh-agent -s)" || echo "Failed to start ssh-agent"
                   ssh-add ~/.ssh/id_ed25519  # Or ~/.ssh/id_rsa if using RSA
+
+                  # Debug: List added identities to check SSH key is loaded
+                  ssh-add -l || echo "No SSH identities found"
 
                   # Add GitHub to known hosts
                   ssh-keyscan github.com >> ~/.ssh/known_hosts
