@@ -23,7 +23,7 @@ jobs:
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-            - name: Deploy
+            - name: Create Infrastructure
               run: |
                   ssh -o StrictHostKeyChecking=no root@${{ inputs.server-ip }} <<EOF
                   set -e
@@ -66,16 +66,6 @@ jobs:
                   # Upgrade pip and install dependencies
                   pip install --upgrade pip
                   pip install -r requirements.txt
-                  cat <<EOF_ENV > .env
-                  ${{ secrets.ENV_FILE }}
-                  EOF_ENV
-                  chmod 600 .env
-                  python manage.py makemigrations
-                  python manage.py migrate
-                  python manage.py create_superuser  
-                  # Collect static files
-                  python manage.py collectstatic --noinput
-
                   # Create Gunicorn systemd service file
                   cat <<SERVICE > /etc/systemd/system/gunicorn.service
                   [Unit]
@@ -94,7 +84,23 @@ jobs:
                   [Install]
                   WantedBy=multi-user.target
                   SERVICE
-
+                  EOF
+            - name: Create and Transfer `.env` File
+              run: |
+                  # Save GitHub Secret to .env
+                  echo "${{ secrets.ENV_FILE }}" | tr -d '\r' > .env  # Fix newlines issue
+                  scp -o StrictHostKeyChecking=no .env root@${{ inputs.server-ip }}:/app/.env
+                  rm .env  # Remove local copy for security
+            - name: Deploy Application
+              run: |
+                  ssh -o StrictHostKeyChecking=no root@${{ inputs.server-ip }} <<EOF
+                  set -e
+                  cd /app
+                  chmod 600 /app/.env
+                  python manage.py makemigrations
+                  python manage.py migrate
+                  python manage.py create_superuser  
+                  python manage.py collectstatic --noinput
                   # Reload systemd, enable and restart Gunicorn
                   sudo systemctl daemon-reload
                   sudo systemctl enable gunicorn
