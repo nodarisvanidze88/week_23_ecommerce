@@ -29,7 +29,7 @@ DEBUG = True
 
 
 
-ALLOWED_HOSTS = ["134.209.238.57","64.225.107.141","209.38.114.253"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
