@@ -87,8 +87,17 @@ jobs:
                   EOF
             - name: Create and Transfer `.env` File
               run: |
+                  # Create a temporary file for .env and properly handle multi-line secrets
+                  echo "${{ secrets.ENV_FILE }}" > env_temp_file
 
-                  scp -o StrictHostKeyChecking=no ${{ secrets.ENV_FILE }} root@${{ inputs.server-ip }}:/app/.env
+                  # Remove any Windows-style carriage returns (CRLF)
+                  sed -i 's/\r$//' env_temp_file
+
+                  # Securely transfer the file to the remote server
+                  scp -o StrictHostKeyChecking=no env_temp_file root@${{ inputs.server-ip }}:/app/.env
+
+                  # Remove the local temporary file for security
+                  rm env_temp_file
 
             - name: Deploy Application
               run: |
