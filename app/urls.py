@@ -34,7 +34,7 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 def success(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return HttpResponse("Hello, world. You're at the polls index.", status=200)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', success),
