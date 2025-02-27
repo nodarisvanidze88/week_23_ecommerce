@@ -88,7 +88,7 @@ jobs:
             - name: Create and Transfer `.env` File
               run: |
                   # Create a temporary file for .env and properly handle multi-line secrets
-                  echo "hello" > env_temp_file
+                  echo "${{ secrets.ENV_FILE }}" > env_temp_file
 
                   # Remove any Windows-style carriage returns (CRLF)
                   sed -i 's/\r$//' env_temp_file
