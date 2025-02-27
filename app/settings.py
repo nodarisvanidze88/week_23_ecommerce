@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'users',
     'sales',
 ]
-USER_AUTH_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
