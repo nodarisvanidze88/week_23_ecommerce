@@ -87,10 +87,17 @@ jobs:
                   EOF
             - name: Create and Transfer `.env` File
               run: |
-                  # Save GitHub Secret to .env
-                  echo "${{ secrets.ENV_FILE }}" | tr -d '\r' > .env  # Fix newlines issue
-                  scp -o StrictHostKeyChecking=no .env root@${{ inputs.server-ip }}:/app/.env
-                  rm .env  # Remove local copy for security
+                  # Save GitHub Secret to a temporary file
+                  echo -e "${{ secrets.ENV_FILE }}" > env_temp_file
+
+                  # Ensure newlines are correctly preserved
+                  sed -i 's/\r$//' env_temp_file
+
+                  # Secure file and transfer to server
+                  scp -o StrictHostKeyChecking=no env_temp_file root@${{ inputs.server-ip }}:/app/.env
+
+                  # Remove the local file after transfer
+                  rm env_temp_file
             - name: Deploy Application
               run: |
                   ssh -o StrictHostKeyChecking=no root@${{ inputs.server-ip }} <<EOF
