@@ -41,7 +41,7 @@ jobs:
 
                   # Start SSH Agent manually and verify it's running
                   eval "\$(ssh-agent -s)" || echo "Failed to start ssh-agent"
-                  ssh-add ~/.ssh/id_rsa # Or ~/.ssh/id_rsa if using RSA
+                  ssh-add ~/.ssh/id_rsa 
 
                   # Debug: List added identities to check SSH key is loaded
                   ssh-add -l || echo "No SSH identities found"
@@ -66,7 +66,11 @@ jobs:
                   # Upgrade pip and install dependencies
                   pip install --upgrade pip
                   pip install -r requirements.txt
-
+                  echo "${{ secrets.ENV_FILE }}" > /app/.env
+                  chmod 600 /app/.env
+                  python manage.py makemigrations
+                  python manage.py migrate
+                  python manage.py create_superuser  
                   # Collect static files
                   python manage.py collectstatic --noinput
 
