@@ -1,0 +1,16 @@
+name: Deploy All Servers
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    server1:
+        uses: ./.github/workflows/deploy-single.yaml
+        with:
+            server-ip: '134.209.238.57'
+    server2:
+        uses: ./.github/workflows/deploy-single.yaml
+        with:
+            server-ip: '64.225.107.141'
