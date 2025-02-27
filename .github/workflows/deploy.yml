@@ -89,3 +89,74 @@ jobs:
                   sudo systemctl enable gunicorn
                   sudo systemctl restart gunicorn
                   EOF
+            - name: Deploy to Server 2
+              run: |
+                  ssh -o StrictHostKeyChecking=no root@64.225.107.141 <<EOF
+                  set -e
+
+                  # Ensure /app exists
+                  if [ ! -d /app ]; then
+                      mkdir -p /app
+                  fi
+
+                  cd /app
+
+                  # Install required dependencies
+                  sudo apt update
+                  sudo apt install -y python3-venv python3-pip gunicorn
+
+                  # Start SSH Agent manually and verify it's running
+                  eval "\$(ssh-agent -s)" || echo "Failed to start ssh-agent"
+                  ssh-add ~/.ssh/id_rsa # Or ~/.ssh/id_rsa if using RSA
+
+                  # Debug: List added identities to check SSH key is loaded
+                  ssh-add -l || echo "No SSH identities found"
+
+                  # Add GitHub to known hosts
+                  ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+                  # Clone if missing, else pull updates
+                  if [ ! -d ".git" ]; then
+                      git clone git@github.com:nodarisvanidze88/week_23_ecommerce.git .
+                  else
+                      git pull origin main
+                  fi
+
+                  # Set Git safe directory
+                  git config --global --add safe.directory /app
+
+                  # Set up virtual environment
+                  python3 -m venv venv
+                  source venv/bin/activate
+
+                  # Upgrade pip and install dependencies
+                  pip install --upgrade pip
+                  pip install -r requirements.txt
+
+                  # Collect static files
+                  python manage.py collectstatic --noinput
+
+                  # Create Gunicorn systemd service file
+                  cat <<SERVICE > /etc/systemd/system/gunicorn.service
+                  [Unit]
+                  Description=Gunicorn daemon for Django project
+                  After=network.target
+
+                  [Service]
+                  User=root
+                  Group=root
+                  WorkingDirectory=/app
+                  ExecStart=/app/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 app.wsgi:application
+
+                  Restart=always
+                  RestartSec=3
+
+                  [Install]
+                  WantedBy=multi-user.target
+                  SERVICE
+
+                  # Reload systemd, enable and restart Gunicorn
+                  sudo systemctl daemon-reload
+                  sudo systemctl enable gunicorn
+                  sudo systemctl restart gunicorn
+                  EOF
