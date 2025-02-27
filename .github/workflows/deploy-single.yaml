@@ -88,7 +88,7 @@ jobs:
             - name: Create and Transfer `.env` File
               run: |
                   # Save GitHub Secret to a temporary file
-                  echo -e "${{ secrets.ENV_FILE }}" > env_temp_file
+                  echo -e ${{ secrets.ENV_FILE }} > env_temp_file
 
                   # Ensure newlines are correctly preserved
                   sed -i 's/\r$//' env_temp_file
